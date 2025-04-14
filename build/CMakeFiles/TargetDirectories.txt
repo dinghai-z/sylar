@@ -1,0 +1,8 @@
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/sylar.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/test_log.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/test_thread.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/test_fiber.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/test_scheduler.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/test_iomanager.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/edit_cache.dir
+/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/build/CMakeFiles/rebuild_cache.dir
