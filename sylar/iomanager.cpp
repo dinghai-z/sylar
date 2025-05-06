@@ -93,7 +93,7 @@ IOManager::~IOManager(){
     close(m_tickleFds[1]);
 }
 
-void IOManager::addEvent(int fd, Event event, std::function<void(void)> cb){
+int IOManager::addEvent(int fd, Event event, std::function<void(void)> cb){
     FdContext::ptr fd_ctx;
     RWMutexType::ReadLock lock(m_mutex);
     if((int)m_fd_contexts.size() > fd){
@@ -114,11 +114,12 @@ void IOManager::addEvent(int fd, Event event, std::function<void(void)> cb){
     epoll_event epoll_ev;
     epoll_ev.events = fd_ctx->events | EPOLLET;
     epoll_ev.data.ptr = fd_ctx.get();
-
     int ret = epoll_ctl(m_epoll_fd, op, fd_ctx->fd, &epoll_ev);
     if(ret){
-        perror("epoll_ctl");
-        SYLAR_ASSERT(ret == 0);
+        SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epoll_fd << ", "
+        << op << ", " << fd << ", " << (EPOLL_EVENTS)epoll_ev.events << "):"
+        << ret << " (" << errno << ") (" << strerror(errno) << ")";
+        return -1;
     }
     m_pendingEventCount++;
 
@@ -129,6 +130,7 @@ void IOManager::addEvent(int fd, Event event, std::function<void(void)> cb){
         event_ctx.fiber = Fiber::GetThis();
     }
     event_ctx.scheduler = Scheduler::GetThis();
+    return 0;
 }
 
 void IOManager::delEvent(int fd, Event event){
@@ -161,12 +163,19 @@ void IOManager::tickle(){
     write(m_tickleFds[1], "t", 1);
 }
 
+bool IOManager::stopping(uint64_t& timeout) {
+    timeout = getNextTimer();
+    return timeout == ~0ull
+        && m_pendingEventCount == 0
+        && Scheduler::stopping();
+}
+
 bool IOManager::stopping(){
-    return m_pendingEventCount == 0 && Scheduler::stopping();
+    uint64_t timeout = 0;
+    return stopping(timeout);
 }
 
 void IOManager::idle(){
-
     const std::size_t MAX_EVNETS = 512;
     epoll_event *epoll_events = new epoll_event[MAX_EVNETS];
     //自动析构
@@ -175,12 +184,35 @@ void IOManager::idle(){
     });
 
     while(!stopping()){
+        uint64_t next_timeout = 0;
+        if(SYLAR_UNLIKELY(stopping(next_timeout))) {
+            SYLAR_LOG_INFO(g_logger) << "name=" << getName()
+                                     << " idle stopping exit";
+            break;
+        }
+        
         int nready;
-        while(true){
-            nready = epoll_wait(m_epoll_fd, epoll_events, MAX_EVNETS, 2000);
-            if(nready != -1)break;
-            else if(nready == -1 && errno == EINTR)continue;
-            else SYLAR_ASSERT(false);
+        do {
+            static const int MAX_TIMEOUT = 3000;
+            if(next_timeout != ~0ull) {
+                next_timeout = (int)next_timeout > MAX_TIMEOUT
+                                ? MAX_TIMEOUT : next_timeout;
+            } else {
+                next_timeout = MAX_TIMEOUT;
+            }
+            nready = epoll_wait(m_epoll_fd, epoll_events, MAX_EVNETS, (int)next_timeout);
+            if(nready < 0 && errno == EINTR) {
+            } else {
+                break;
+            }
+        } while(true);
+
+        std::vector<std::function<void()> > cbs;
+        listExpiredCb(cbs);
+        if(!cbs.empty()) {
+            //SYLAR_LOG_DEBUG(g_logger) << "on timer cbs.size=" << cbs.size();
+            schedule(cbs.begin(), cbs.end());
+            cbs.clear();
         }
         
         for(int i = 0; i < nready; i++){
@@ -199,7 +231,11 @@ void IOManager::idle(){
             new_event.events = left_event | EPOLLET;
             new_event.data.ptr = event.data.ptr;
             int ret = epoll_ctl(m_epoll_fd, op, fd_context->fd, &new_event);
-            SYLAR_ASSERT(ret == 0);
+            if(ret){
+                // SYLAR_ASSERT(ret == 0);
+                SYLAR_LOG_DEBUG(g_logger) << "epoll_ctl error: " << strerror(errno);
+                return;
+            }
 
             if(event.events & EPOLLIN){
                 fd_context->triggerContext(READ);
@@ -210,9 +246,12 @@ void IOManager::idle(){
                 m_pendingEventCount--;
             }
         }
-
         Fiber::YieldToHold();
     }
+}
+
+void IOManager::onTimerInsertedAtFront() {
+    tickle();
 }
 
 }

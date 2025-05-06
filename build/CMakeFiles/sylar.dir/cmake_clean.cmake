@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "../lib/libsylar.so"
   "CMakeFiles/sylar.dir/sylar/fiber.cpp.o"
   "CMakeFiles/sylar.dir/sylar/fiber.cpp.o.d"
+  "CMakeFiles/sylar.dir/sylar/hook.cpp.o"
+  "CMakeFiles/sylar.dir/sylar/hook.cpp.o.d"
   "CMakeFiles/sylar.dir/sylar/iomanager.cpp.o"
   "CMakeFiles/sylar.dir/sylar/iomanager.cpp.o.d"
   "CMakeFiles/sylar.dir/sylar/log.cpp.o"
@@ -13,6 +15,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sylar.dir/sylar/scheduler.cpp.o.d"
   "CMakeFiles/sylar.dir/sylar/thread.cpp.o"
   "CMakeFiles/sylar.dir/sylar/thread.cpp.o.d"
+  "CMakeFiles/sylar.dir/sylar/timer.cpp.o"
+  "CMakeFiles/sylar.dir/sylar/timer.cpp.o.d"
   "CMakeFiles/sylar.dir/sylar/util.cpp.o"
   "CMakeFiles/sylar.dir/sylar/util.cpp.o.d"
 )

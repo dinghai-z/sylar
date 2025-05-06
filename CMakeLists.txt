@@ -16,6 +16,8 @@ set(LIB_SRC
     sylar/scheduler.cpp
     sylar/util.cpp
     sylar/thread.cpp
+    sylar/timer.cpp
+    sylar/hook.cpp
     )
 
 add_library(sylar SHARED ${LIB_SRC})
@@ -51,6 +53,21 @@ add_executable(test_iomanager tests/test_iomanager.cpp)
 redefine_file_macro(test_iomanager)
 add_dependencies(test_iomanager sylar)
 target_link_libraries(test_iomanager ${LIBS})
+
+add_executable(test_timer tests/test_timer.cpp)
+redefine_file_macro(test_timer)
+add_dependencies(test_timer sylar)
+target_link_libraries(test_timer ${LIBS})
+
+add_executable(test_hook tests/test_hook.cpp)
+redefine_file_macro(test_hook)
+add_dependencies(test_hook sylar)
+target_link_libraries(test_hook ${LIBS})
+
+add_executable(tcp_server tests/tcp_server.cpp)
+redefine_file_macro(tcp_server)
+add_dependencies(tcp_server sylar)
+target_link_libraries(tcp_server ${LIBS})
 
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

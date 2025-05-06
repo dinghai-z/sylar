@@ -50,4 +50,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/test_fiber.dir/DependInfo.cmake"
   "CMakeFiles/test_scheduler.dir/DependInfo.cmake"
   "CMakeFiles/test_iomanager.dir/DependInfo.cmake"
+  "CMakeFiles/test_timer.dir/DependInfo.cmake"
+  "CMakeFiles/test_hook.dir/DependInfo.cmake"
+  "CMakeFiles/tcp_server.dir/DependInfo.cmake"
   )

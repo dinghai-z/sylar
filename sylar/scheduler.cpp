@@ -1,6 +1,7 @@
 #include "scheduler.hpp"
 #include "util.hpp"
 #include "macro.hpp"
+#include "hook.hpp"
 #include <time.h>
 
 namespace sylar{
@@ -67,11 +68,13 @@ void Scheduler::idle(){
 }
 
 void Scheduler::run(){
+    set_hook_enable(true);
     setThis();
     t_scheduler_fiber = Fiber::GetThis().get();
     Fiber::ptr idle_fiber = Fiber::ptr(new Fiber(std::bind(&sylar::Scheduler::idle, this)));
-    Fiber::ptr ft_fiber;
+    // Fiber::ptr ft_fiber;
     while(true){
+        Fiber::ptr ft_fiber;
         FiberAndThread ft;
         bool need_tickle = false;
         {
@@ -107,6 +110,8 @@ void Scheduler::run(){
             m_active_thread_count--;
             if(ft_fiber->getState() == Fiber::READY){
                 schedule(ft_fiber, (ft.thread_id != -1) ? ft.thread_id : -1);
+                ft_fiber.reset();
+            } else if(ft_fiber->getState() == Fiber::HOLD){
                 ft_fiber.reset();
             }
         } else {

@@ -3,10 +3,11 @@
 
 #include "scheduler.hpp"
 #include <sys/epoll.h>
+#include "timer.hpp"
 
 namespace sylar{
 
-class IOManager : public Scheduler{
+class IOManager : public Scheduler, public TimerManager {
 public:
     typedef std::shared_ptr<IOManager> ptr;
     typedef RWLock RWMutexType;
@@ -20,7 +21,7 @@ public:
     static IOManager *GetThis();
     IOManager(std::size_t thread_count = 1, const std::string name = "");
     ~IOManager() override;
-    void addEvent(int fd, Event event, std::function<void(void)> cb = nullptr);
+    int addEvent(int fd, Event event, std::function<void(void)> cb = nullptr);
     void delEvent(int fd, Event event);
 
 protected:
@@ -28,6 +29,13 @@ protected:
     void idle() override;
     bool stopping() override;
     void resizeFdContexts(std::size_t size);
+    void onTimerInsertedAtFront() override;
+    /**
+     * @brief 判断是否可以停止
+     * @param[out] timeout 最近要出发的定时器事件间隔
+     * @return 返回是否可以停止
+     */
+    bool stopping(uint64_t& timeout);
 
 private:
     struct FdContext{

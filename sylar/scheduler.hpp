@@ -19,12 +19,42 @@ public:
     void start();
     void stop();
 
+    /**
+     * @brief 调度协程
+     * @param[in] fc 协程或函数
+     * @param[in] thread 协程执行的线程id,-1标识任意线程
+     */
     template<typename FiberOrCb>
     void schedule(FiberOrCb f, pid_t t = -1){
         MutexType::Lock lock(m_mutex);
+        bool need_tickle = m_fibers.empty();
         FiberAndThread ft(f, t);
         if(ft.fiber || ft.cb){
             m_fibers.push_back(ft);
+        }
+        if(need_tickle) {
+            tickle();
+        }
+    }
+
+    /**
+     * @brief 批量调度协程
+     * @param[in] begin 协程数组的开始
+     * @param[in] end 协程数组的结束
+     */
+    template<class InputIterator>
+    void schedule(InputIterator begin, InputIterator end) {
+        MutexType::Lock lock(m_mutex);
+        bool need_tickle = m_fibers.empty();
+        while(begin != end){
+            FiberAndThread ft(&*begin, -1);
+            if(ft.fiber || ft.cb){
+                m_fibers.push_back(ft);
+            }
+            ++begin;
+        }
+        if(need_tickle) {
+            tickle();
         }
     }
 

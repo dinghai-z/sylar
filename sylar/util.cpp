@@ -1,6 +1,14 @@
 #include "util.hpp"
 #include "log.hpp"
 #include "fiber.hpp"
+#include <sys/time.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
 
 namespace sylar{
 
@@ -40,6 +48,18 @@ std::string BacktraceToString(int size, int skip, const std::string& prefix) {
         ss << prefix << bt[i] << std::endl;
     }
     return ss.str();
+}
+
+uint64_t GetCurrentMS() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000ul  + tv.tv_usec / 1000;
+}
+
+uint64_t GetCurrentUS() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 * 1000ul  + tv.tv_usec;
 }
 
 }
