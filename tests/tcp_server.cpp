@@ -35,7 +35,7 @@ void handler(int connect_fd, sockaddr_in client_sin){
 
 int main(int argc, char** argv) {
     g_logger->setLevel(sylar::LogLevel::ERROR);
-    sylar::IOManager iom(3, "iomanager");
+    sylar::IOManager iom(8, "iomanager");
 
     int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in sin;
@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
     sin.sin_port = htons(8088);
     bind(listen_fd, (sockaddr*)&sin, sizeof(sin));
     listen(listen_fd, 1024);
+    fcntl(listen_fd, F_SETFL, O_NONBLOCK);
 
     for(int i = 0; i != 1; i++){
         iom.schedule([=](){

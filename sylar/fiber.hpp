@@ -7,12 +7,14 @@
 #include <unistd.h>
 #include <functional>
 #include <memory>
+#include "mutex.hpp"
 
 namespace sylar{
 
 class Fiber : public std::enable_shared_from_this<Fiber>{
 public:
     typedef std::shared_ptr<Fiber> ptr;
+    typedef Mutex MutexType;
     enum State{
         INIT = 0,
         EXEC = 1,
@@ -46,6 +48,9 @@ private:
     std::size_t m_stack_size = 0;
     void *m_stack = nullptr;
     State m_state = INIT;
+
+public:
+    MutexType m_mutex;
 };
 
 }

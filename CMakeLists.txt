@@ -27,7 +27,8 @@ find_library(PTHREAD pthread)
 
 set(LIBS
     sylar
-    ${PTHREAD})
+    ${PTHREAD}
+    dl)
 
 add_executable(test_log tests/test_log.cpp)
 redefine_file_macro(test_log)

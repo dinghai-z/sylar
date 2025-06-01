@@ -225,6 +225,11 @@ void IOManager::idle(){
 
             FdContext *fd_context = (FdContext *)event.data.ptr;
             FdContext::MutexType::Lock lock(fd_context->mutex);
+
+            if(!((event.events & (READ | WRITE)) & fd_context->events)){
+                continue;
+            }
+
             Event left_event = (Event)(fd_context->events & ~event.events);
             int op = left_event ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
             epoll_event new_event;

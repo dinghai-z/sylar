@@ -1,8 +1,7 @@
 file(REMOVE_RECURSE
-  "../bin/test_fiber"
-  "../bin/test_fiber.pdb"
   "CMakeFiles/test_fiber.dir/tests/test_fiber.cpp.o"
-  "CMakeFiles/test_fiber.dir/tests/test_fiber.cpp.o.d"
+  "../bin/test_fiber.pdb"
+  "../bin/test_fiber"
 )
 
 # Per-language clean rules from dependency scanning.

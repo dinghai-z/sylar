@@ -95,6 +95,7 @@ void Scheduler::run(){
             if(need_tickle || it != m_fibers.end())tickle();
         }
         if(ft.fiber != nullptr){
+            Fiber::MutexType::Lock lock(ft.fiber->m_mutex);
             ft.fiber->swapIn();
             m_active_thread_count--;
             if(ft.fiber->getState() == Fiber::READY){
@@ -106,6 +107,7 @@ void Scheduler::run(){
             } else {
                 ft_fiber = Fiber::ptr(new Fiber(ft.cb));
             }
+            Fiber::MutexType::Lock lock(ft_fiber->m_mutex);
             ft_fiber->swapIn();
             m_active_thread_count--;
             if(ft_fiber->getState() == Fiber::READY){

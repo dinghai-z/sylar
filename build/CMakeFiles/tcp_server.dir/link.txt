@@ -1,1 +1,1 @@
-/usr/bin/c++ -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined  CMakeFiles/tcp_server.dir/tests/tcp_server.cpp.o -o ../bin/tcp_server  -Wl,-rpath,/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so /usr/lib/x86_64-linux-gnu/libpthread.a 
+/usr/bin/c++  -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined    CMakeFiles/tcp_server.dir/tests/tcp_server.cpp.o  -o ../bin/tcp_server -Wl,-rpath,/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so -lpthread -ldl 
