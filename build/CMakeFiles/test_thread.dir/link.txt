@@ -1,1 +1,1 @@
-/usr/bin/c++  -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined    CMakeFiles/test_thread.dir/tests/test_thread.cpp.o  -o ../bin/test_thread -Wl,-rpath,/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so -lpthread -ldl 
+/usr/bin/c++  -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined   CMakeFiles/test_thread.dir/tests/test_thread.cpp.o  -o ../bin/test_thread -Wl,-rpath,/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so -lpthread -ldl 

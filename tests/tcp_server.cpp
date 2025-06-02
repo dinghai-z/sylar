@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
         iom.schedule([=](){
             while(1){
                 sleep(10);
-                SYLAR_LOG_INFO(g_logger) << std::to_string(i) << " sleep 10s";
+                SYLAR_LOG_ERROR(g_logger) << std::to_string(i) << " sleep 10s";
             }
         });
     }

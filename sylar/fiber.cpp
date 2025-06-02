@@ -49,7 +49,7 @@ Fiber::~Fiber(){
         SYLAR_ASSERT(!m_cb);
         SYLAR_ASSERT(m_state == EXEC);
     }
-    //SYLAR_LOG_DEBUG(g_logger) << "~Fiber() id = " << m_id;
+    // SYLAR_LOG_DEBUG(g_logger) << "~Fiber() id = " << m_id;
 }
 
 Fiber::Fiber(){
@@ -60,7 +60,7 @@ Fiber::Fiber(){
     }
     SetThis(this);
     s_fiber_count++;
-    //SYLAR_LOG_DEBUG(g_logger) << "Fiber() id = " << m_id;
+    // SYLAR_LOG_DEBUG(g_logger) << "Fiber() id = " << m_id;
 }
 
 void Fiber::SetThis(Fiber* f){

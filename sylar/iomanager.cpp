@@ -38,6 +38,7 @@ void IOManager::FdContext::triggerContext(Event event){
     if(event_ctx.cb){
         event_ctx.scheduler->schedule(&event_ctx.cb);
     } else {
+        // if(event_ctx.fiber->getState() == Fiber::EXEC)SYLAR_LOG_DEBUG(g_logger) << "fiber" << event_ctx.fiber->getId() << " is executing, events: " << events << " ,event: " << event;
         event_ctx.scheduler->schedule(&event_ctx.fiber);
     }
 }
@@ -66,6 +67,7 @@ IOManager::IOManager(std::size_t thread_count, const std::string name)
     SYLAR_ASSERT(ret == 0);
 
     epoll_event epoll_ev;
+    memset(&epoll_ev, 0, sizeof(epoll_ev));
     epoll_ev.events = EPOLLIN | EPOLLET;
     epoll_ev.data.fd = m_tickleFds[0];
     ret = epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_tickleFds[0], &epoll_ev);

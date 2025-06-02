@@ -4,7 +4,7 @@ project(sylar)
 include (cmake/utils.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_FLAGS "-std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined ")
+set(CMAKE_CXX_FLAGS "-std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined")
 
 include_directories(.)
 
