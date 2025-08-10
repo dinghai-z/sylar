@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <memory>
 #include <string.h>
+#include <sys/stat.h>
 
 namespace sylar{
 
@@ -62,6 +63,7 @@ IOManager::IOManager(std::size_t thread_count, const std::string name)
     SYLAR_ASSERT(m_epoll_fd > 0);
 
     int ret = pipe(m_tickleFds);
+    // SYLAR_LOG_DEBUG(g_logger) << "pipe[0]=" << m_tickleFds[0] << ", pipe[1]=" << m_tickleFds[1];
     SYLAR_ASSERT(ret == 0);
     ret = fcntl(m_tickleFds[0], F_SETFL, O_NONBLOCK);
     SYLAR_ASSERT(ret == 0);
@@ -109,7 +111,9 @@ int IOManager::addEvent(int fd, Event event, std::function<void(void)> cb){
     }
 
     FdContext::MutexType::Lock lock2(fd_ctx->mutex);
-    SYLAR_ASSERT(!(fd_ctx->events & event));
+    SYLAR_ASSERT2(!(fd_ctx->events & event), "fd=" << fd
+        << ", events=" << (EPOLL_EVENTS)fd_ctx->events
+        << ", event=" << (EPOLL_EVENTS)event);
     int op = (fd_ctx->events == NONE) ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
     fd_ctx->events = (Event)(fd_ctx->events | event);
     SYLAR_ASSERT(fd_ctx->fd == fd);

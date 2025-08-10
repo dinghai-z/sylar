@@ -1,0 +1,1 @@
+/usr/bin/c++ -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined CMakeFiles/application.dir/tests/application.cpp.o -o ../bin/application  -Wl,-rpath,/home/dinghai/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so /usr/lib/x86_64-linux-gnu/libpthread.a -lcurl -ldl 

@@ -34,8 +34,13 @@ void handler(int connect_fd, sockaddr_in client_sin){
 }
 
 int main(int argc, char** argv) {
-    g_logger->setLevel(sylar::LogLevel::ERROR);
-    sylar::IOManager iom(8, "iomanager");
+    g_logger->setLevel(sylar::LogLevel::INFO);
+
+    SYLAR_LOG_DEBUG(g_logger) << "main start";
+
+    sylar::IOManager iom(1, "iomanager");
+
+    SYLAR_LOG_DEBUG(g_logger) << "iomanager start";
 
     int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in sin;
@@ -50,27 +55,49 @@ int main(int argc, char** argv) {
         iom.schedule([=](){
             while(1){
                 sleep(10);
-                SYLAR_LOG_ERROR(g_logger) << std::to_string(i) << " sleep 10s";
+                // SYLAR_LOG_INFO(g_logger) << std::to_string(i) << " sleep 10s";
             }
         });
     }
 
-    while(1){
-        sockaddr_in client_sin;
-        socklen_t sock_addr_len = INET_ADDRSTRLEN;
-        int connect_fd = accept(listen_fd, (sockaddr*)&client_sin, &sock_addr_len);
-        if(connect_fd == -1){
-            SYLAR_LOG_DEBUG(g_logger) << "accept error";
-            continue;
+    iom.schedule([&](){
+        while(1){
+            sockaddr_in client_sin;
+            socklen_t sock_addr_len = INET_ADDRSTRLEN;
+            int connect_fd = accept(listen_fd, (sockaddr*)&client_sin, &sock_addr_len);
+            if(connect_fd == -1){
+                SYLAR_LOG_DEBUG(g_logger) << "accept error";
+                continue;
+            }
+            char str[INET_ADDRSTRLEN];
+            SYLAR_LOG_DEBUG(g_logger) << "connect from: " << inet_ntop(AF_INET, &client_sin.sin_addr, str, sizeof(str)) << ":" << client_sin.sin_port;
+            
+            fcntl(connect_fd, F_SETFL, O_NONBLOCK);
+            // iom.addEvent(connect_fd, sylar::IOManager::READ, [connect_fd, client_sin](){
+            //     handler(connect_fd, client_sin);
+            // });
+            iom.schedule([=](){
+                handler(connect_fd, client_sin);
+            });
         }
-        char str[INET_ADDRSTRLEN];
-        SYLAR_LOG_DEBUG(g_logger) << "connect from: " << inet_ntop(AF_INET, &client_sin.sin_addr, str, sizeof(str)) << ":" << client_sin.sin_port;
-        
-        fcntl(connect_fd, F_SETFL, O_NONBLOCK);
-        sylar::IOManager::GetThis()->addEvent(connect_fd, sylar::IOManager::READ, [connect_fd, client_sin](){
-            handler(connect_fd, client_sin);
-        });
-    }
+    });
+
+    iom.schedule([](){
+        char buffer[256];
+        fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+        while(1){
+            int n = read(STDIN_FILENO, buffer, sizeof(buffer));
+            if(n > 0){
+                SYLAR_LOG_INFO(g_logger) << "read from stdin: " << buffer;
+            } else if(n == 0){
+                SYLAR_LOG_INFO(g_logger) << "stdin closed";
+                break;
+            } else {
+                SYLAR_LOG_ERROR(g_logger) << "read error";
+                break;
+            }
+        }
+    });
 
     return 0;
 }

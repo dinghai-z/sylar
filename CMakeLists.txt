@@ -28,6 +28,7 @@ find_library(PTHREAD pthread)
 set(LIBS
     sylar
     ${PTHREAD}
+    curl
     dl)
 
 add_executable(test_log tests/test_log.cpp)
@@ -69,6 +70,11 @@ add_executable(tcp_server tests/tcp_server.cpp)
 redefine_file_macro(tcp_server)
 add_dependencies(tcp_server sylar)
 target_link_libraries(tcp_server ${LIBS})
+
+add_executable(application tests/application.cpp)
+redefine_file_macro(application)
+add_dependencies(application sylar)
+target_link_libraries(application ${LIBS})
 
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

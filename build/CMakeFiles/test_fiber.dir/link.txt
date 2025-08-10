@@ -1,1 +1,1 @@
-/usr/bin/c++  -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined   CMakeFiles/test_fiber.dir/tests/test_fiber.cpp.o  -o ../bin/test_fiber -Wl,-rpath,/mnt/hgfs/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so -lpthread -ldl 
+/usr/bin/c++ -std=c++11 -O0 -ggdb -Wall -Wno-builtin-macro-redefined CMakeFiles/test_fiber.dir/tests/test_fiber.cpp.o -o ../bin/test_fiber  -Wl,-rpath,/home/dinghai/shared/Projects/02_APP/00_myAPP/10_sylar/lib ../lib/libsylar.so /usr/lib/x86_64-linux-gnu/libpthread.a -lcurl -ldl 

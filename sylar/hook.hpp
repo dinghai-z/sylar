@@ -34,6 +34,9 @@
  //sleep
  typedef unsigned int (*sleep_fun)(unsigned int seconds);
  extern sleep_fun sleep_f;
+
+typedef int (*usleep_fun)(useconds_t usec);
+extern usleep_fun usleep_f;
  
  typedef int (*accept_fun)(int s, struct sockaddr *addr, socklen_t *addrlen);
  extern accept_fun accept_f;

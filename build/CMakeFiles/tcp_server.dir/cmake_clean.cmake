@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/tcp_server.dir/tests/tcp_server.cpp.o"
-  "../bin/tcp_server.pdb"
   "../bin/tcp_server"
+  "../bin/tcp_server.pdb"
+  "CMakeFiles/tcp_server.dir/tests/tcp_server.cpp.o"
+  "CMakeFiles/tcp_server.dir/tests/tcp_server.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

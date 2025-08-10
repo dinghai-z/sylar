@@ -4,6 +4,7 @@
 #include "fiber.hpp"
 #include "iomanager.hpp"
 #include "macro.hpp"
+#include <sys/stat.h>
 
 sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 namespace sylar {
@@ -12,6 +13,7 @@ static thread_local bool t_hook_enable = false;
 
 #define HOOK_FUN(XX) \
     XX(sleep) \
+    XX(usleep) \
     XX(accept) \
     XX(read) \
     XX(write) \
@@ -53,10 +55,17 @@ static ssize_t do_io(int fd, OriginFun fun, const char* hook_fun_name, uint32_t 
     if(!sylar::t_hook_enable) {
         return fun(fd, std::forward<Args>(args)...);
     }
-    if(fd <= 4){
-        return fun(fd, std::forward<Args>(args)...);
+    // if(fd <= 4){
+    //     return fun(fd, std::forward<Args>(args)...);
+    // }
+    struct stat fd_stat;
+    if(-1 == fstat(fd, &fd_stat)) {
+        SYLAR_LOG_ERROR(g_logger) << "fstat error";
+    } else {
+        if(S_ISFIFO(fd_stat.st_mode)) {
+            return fun(fd, std::forward<Args>(args)...);
+        }
     }
-
 retry:
     ssize_t n = fun(fd, std::forward<Args>(args)...);
     while(n == -1 && errno == EINTR) {
@@ -90,6 +99,19 @@ unsigned int sleep(unsigned int seconds) {
     sylar::Fiber::ptr fiber = sylar::Fiber::GetThis();
     sylar::IOManager* iom = sylar::IOManager::GetThis();
     iom->addTimer(seconds * 1000, std::bind((void(sylar::Scheduler::*)(sylar::Fiber::ptr, int thread))&sylar::IOManager::schedule, iom, fiber, -1));
+    sylar::Fiber::YieldToHold();
+    return 0;
+}
+
+int usleep(useconds_t usec) {
+    if(!sylar::t_hook_enable) {
+        return usleep_f(usec);
+    }
+    sylar::Fiber::ptr fiber = sylar::Fiber::GetThis();
+    sylar::IOManager* iom = sylar::IOManager::GetThis();
+    iom->addTimer(usec / 1000, std::bind((void(sylar::Scheduler::*)
+            (sylar::Fiber::ptr, int thread))&sylar::IOManager::schedule
+            ,iom, fiber, -1));
     sylar::Fiber::YieldToHold();
     return 0;
 }

@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/test_thread.dir/tests/test_thread.cpp.o"
-  "../bin/test_thread.pdb"
   "../bin/test_thread"
+  "../bin/test_thread.pdb"
+  "CMakeFiles/test_thread.dir/tests/test_thread.cpp.o"
+  "CMakeFiles/test_thread.dir/tests/test_thread.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.
